@@ -30,24 +30,26 @@ var mainloop = function(){
     user = firebase.auth().currentUser;
 
     //update own state here
-    myData.uid = user.uid;
-    myData.x = document.getElementById("mytextx").value;
-    myData.y = document.getElementById("mytexty").value;
-    document.getElementById("data").innerHTML = user.uid + "</br>" + myData.x + "," + myData.y;
+    if (user){
+      myData.uid = user.uid;
+      myData.x = document.getElementById("mytextx").value;
+      myData.y = document.getElementById("mytexty").value;
+      document.getElementById("data").innerHTML = user.uid + "</br>" + myData.x + "," + myData.y;
     
-    //publish self state to server
-    firebase.database().ref("game/" + sessionID + "/" + user.uid).set(myData);
+      //publish self state to server
+      firebase.database().ref("game/" + sessionID + "/" + user.uid).set(myData);
 
-    //get other's data from server
-    firebase.database().ref('game/' + sessionID + "/").once('value').then(function(snapshot) {
-      snapshot.forEach(function(childSnapshot){
-        var item = childSnapshot.val();
-        if (item.uid != user.uid)
-          //update other object's state here
-          document.getElementById("otherData").innerHTML = JSON.stringify(item);  
+      //get other's data from server
+      firebase.database().ref('game/' + sessionID + "/").once('value').then(function(snapshot) {
+        snapshot.forEach(function(childSnapshot){
+          var item = childSnapshot.val();
+          if (item.uid != user.uid)
+            //update other object's state here
+            document.getElementById("otherData").innerHTML = JSON.stringify(item);  
+        });
+  
       });
-
-    });
+    }
 }
 setInterval(mainloop, 1000 / 60);
 
