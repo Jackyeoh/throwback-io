@@ -22,8 +22,10 @@
 <script type="text/javascript">
 var sessionID = 10;
 var user = 1;
+initApp();
 
 function signIn(){
+  alert("signing in");
   var email = document.getElementById("email").value;
   var password = document.getElementById("pass").value;
   firebase.auth().signInWithEmailAndPassword(email, password).catch(function(error) {
@@ -32,10 +34,7 @@ function signIn(){
     var errorMessage = error.message;
     alert(errorCode + " : " + errorMessage);
   });
-  if (firebase.auth().currentUser)
-    window.location.href = "core.html";
 }
-
 
 function signUp(){
   var email = document.getElementById("email").value;
@@ -46,21 +45,22 @@ function signUp(){
     var errorMessage = error.message;
     alert(errorCode + " : " + errorMessage);
   });
-  signIn();
 }
 
 
 function initApp() {
   // [START authstatelistener]
   firebase.auth().onAuthStateChanged(function(user) {
-    alert(user.uid);
-    if (!user) {
-      // User is not signed in.
-      window.location.href = "login.html";
-      }else{
-        refUser = firebase.auth().currentUser;
-      }
-    });
+    if (user) {
+      // User is signed in.
+      alert("signed in as "+user.uid);
+      refUser = firebase.auth().currentUser;
+      if (firebase.auth().currentUser)
+        window.location.href = "core.html";
+    }else{
+
+    }
+  });
   // [END authstatelistener]
 }
 

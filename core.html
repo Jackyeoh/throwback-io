@@ -21,18 +21,33 @@
 
 <script type="text/javascript">
 var sessionID = 10;
-var user = 1;
+var user = -1;
+var othData = [];
+initApp();
 
 var myData = new Object();
 var mainloop = function(){
+    user = firebase.auth().currentUser;
+
+    //update own state here
+    myData.uid = user.uid;
     myData.x = document.getElementById("mytextx").value;
     myData.y = document.getElementById("mytexty").value;
-    document.getElementById("data").innerHTML = myData.x;
- //   var updates = {};
- //   updates['/game/' + sessionID + '/' + user] = myData;
- //   firebase.database().ref().update(updates).then(function() {
- //     document.getElementByID("testbox").innerHTML="Running";
- //   });
+    document.getElementById("data").innerHTML = user.uid + "</br>" + myData.x + "," + myData.y;
+    
+    //publish self state to server
+    firebase.database().ref("game/" + sessionID + "/" + user.uid).set(myData);
+
+    //get other's data from server
+    firebase.database().ref('game/' + sessionID + "/").once('value').then(function(snapshot) {
+      snapshot.forEach(function(childSnapshot){
+        var item = childSnapshot.val();
+        if (item.uid != user.uid)
+          //update other object's state here
+          document.getElementById("otherData").innerHTML = JSON.stringify(item);  
+      });
+
+    });
 }
 setInterval(mainloop, 1000 / 60);
 
@@ -43,9 +58,11 @@ function initApp() {
   firebase.auth().onAuthStateChanged(function(user) {
     if (!user) {
         // User is not signed in.
+        document.getElementById("data").innerHTML = "";
         window.location.href = "login.html";
       }else{
         refUser = firebase.auth().currentUser;
+        document.getElementById("data").innerHTML = user.uid;
       }
     });
   // [END authstatelistener]
@@ -54,7 +71,8 @@ function initApp() {
 
 <body>
   <div id="testbox">
-<p id="data">xc</p>
+  <p id="data">xc</p>
+  <p id="otherData">none</p>
 hey
   </div>
 <input id="mytextx" value="50"/>
