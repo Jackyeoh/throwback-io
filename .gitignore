@@ -75,5 +75,5 @@ Thumbs.db
 # IDE generated files #
 
 ######################
-
+.idea/**/*
 .metadata/**/*

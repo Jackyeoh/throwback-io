@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="utf-8"/>
+  <title>test</title>
+</head>
+
+<script src="https://www.gstatic.com/firebasejs/4.6.2/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyDIEaoy8b10jgq40JABqvYYayq_SlYS3AA",
+    authDomain: "throwback-io-9ea21.firebaseapp.com",
+    databaseURL: "https://throwback-io-9ea21.firebaseio.com",
+    projectId: "throwback-io-9ea21",
+    storageBucket: "throwback-io-9ea21.appspot.com",
+    messagingSenderId: "424917555065"
+  };
+  firebase.initializeApp(config);
+</script>
+
+<script type="text/javascript">
+var sessionID = 10;
+var user = 1;
+
+function signIn(){
+  var email = document.getElementById("email").value;
+  var password = document.getElementById("pass").value;
+  firebase.auth().signInWithEmailAndPassword(email, password).catch(function(error) {
+    // Handle Errors here.
+    var errorCode = error.code;
+    var errorMessage = error.message;
+    alert(errorCode + " : " + errorMessage);
+  });
+  if (firebase.auth().currentUser)
+    window.location.href = "core.html";
+}
+
+
+function signUp(){
+  var email = document.getElementById("email").value;
+  var password = document.getElementById("pass").value;
+  firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
+    // Handle Errors here.
+    var errorCode = error.code;
+    var errorMessage = error.message;
+    alert(errorCode + " : " + errorMessage);
+  });
+  signIn();
+}
+
+
+function initApp() {
+  // [START authstatelistener]
+  firebase.auth().onAuthStateChanged(function(user) {
+    alert(user.uid);
+    if (!user) {
+      // User is not signed in.
+      window.location.href = "login.html";
+      }else{
+        refUser = firebase.auth().currentUser;
+      }
+    });
+  // [END authstatelistener]
+}
+
+</script>
+
+<body>
+  <div id="testbox">
+hey
+  </div>
+<form action="core.html" method="POST">
+   <input id="email"/>
+   <input id="pass"/></b>
+   <input id="signup" type="button" value="Sign Up" onclick="signUp()">
+   <input id="signup" type="button" value="Sign In" onclick="signIn()">
+</form>
+</body>

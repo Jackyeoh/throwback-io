@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="utf-8"/>
+  <title>core</title>
+</head>
+
+<script src="https://www.gstatic.com/firebasejs/4.6.2/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyDIEaoy8b10jgq40JABqvYYayq_SlYS3AA",
+    authDomain: "throwback-io-9ea21.firebaseapp.com",
+    databaseURL: "https://throwback-io-9ea21.firebaseio.com",
+    projectId: "throwback-io-9ea21",
+    storageBucket: "throwback-io-9ea21.appspot.com",
+    messagingSenderId: "424917555065"
+  };
+  firebase.initializeApp(config);
+</script>
+
+<script type="text/javascript">
+var sessionID = 10;
+var user = 1;
+
+var myData = new Object();
+var mainloop = function(){
+    myData.x = document.getElementById("mytextx").value;
+    myData.y = document.getElementById("mytexty").value;
+    document.getElementById("data").innerHTML = myData.x;
+ //   var updates = {};
+ //   updates['/game/' + sessionID + '/' + user] = myData;
+ //   firebase.database().ref().update(updates).then(function() {
+ //     document.getElementByID("testbox").innerHTML="Running";
+ //   });
+}
+setInterval(mainloop, 1000 / 60);
+
+
+// Listening for auth state changes.
+function initApp() {
+  // [START authstatelistener]
+  firebase.auth().onAuthStateChanged(function(user) {
+    if (!user) {
+        // User is not signed in.
+        window.location.href = "login.html";
+      }else{
+        refUser = firebase.auth().currentUser;
+      }
+    });
+  // [END authstatelistener]
+}
+</script>
+
+<body>
+  <div id="testbox">
+<p id="data">xc</p>
+hey
+  </div>
+<input id="mytextx" value="50"/>
+<input id="mytexty" value="50"/>
+<input id="data1"/>
+</body>
