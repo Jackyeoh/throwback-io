@@ -20,13 +20,28 @@
 </script>
 
 <script type="text/javascript">
-var sessionID = 10;
-var user = -1;
-var othData = [];
-initApp();
+//==========Global Section Start==========
+  var sessionID = -1;
+  var user = -1;
+  var othData = [];
+  var gameLoop;
+  initApp();
 
-var myData = new Object();
-var mainloop = function(){
+  function play(){
+    //kick off game's main mainloop
+    document.getElementById("play").style.visibility = "hidden";
+    gameLoop = setInterval(mainloop, 1000 / 60);
+    //setup canvas here
+    //end of canvas setup
+  }
+
+  function stop(){
+    //stops gameLoop
+    clearInterval(gameLoop);
+  }
+
+  var mainloop = function(){
+    var myData = new Object();
     user = firebase.auth().currentUser;
 
     //update own state here
@@ -35,7 +50,7 @@ var mainloop = function(){
       myData.x = document.getElementById("mytextx").value;
       myData.y = document.getElementById("mytexty").value;
       document.getElementById("data").innerHTML = user.uid + "</br>" + myData.x + "," + myData.y;
-    
+
       //publish self state to server
       firebase.database().ref("game/" + sessionID + "/" + user.uid).set(myData);
 
@@ -45,13 +60,12 @@ var mainloop = function(){
           var item = childSnapshot.val();
           if (item.uid != user.uid)
             //update other object's state here
-            document.getElementById("otherData").innerHTML = JSON.stringify(item);  
+            document.getElementById("otherData").innerHTML = JSON.stringify(item);
         });
-  
+
       });
     }
 }
-setInterval(mainloop, 1000 / 60);
 
 
 // Listening for auth state changes.
@@ -69,15 +83,56 @@ function initApp() {
     });
   // [END authstatelistener]
 }
+
+function signIn(){
+  alert("signing in");
+  var email = document.getElementById("email").value;
+  var password = document.getElementById("pass").value;
+  firebase.auth().signInWithEmailAndPassword(email, password).catch(function(error) {
+    // Handle Errors here.
+    var errorCode = error.code;
+    var errorMessage = error.message;
+    alert(errorCode + " : " + errorMessage);
+  });
+}
+
+function signUp(){
+  var email = document.getElementById("email").value;
+  var password = document.getElementById("pass").value;
+  firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
+    // Handle Errors here.
+    var errorCode = error.code;
+    var errorMessage = error.message;
+    alert(errorCode + " : " + errorMessage);
+  });
+}
+
+function signOut(){
+  firebase.auth().signOut().then(function() {
+    alert("Signed Out");
+  }, function(error) {
+    alert("Sign Out Error");
+  });
+}
+
+
 </script>
 
 <body>
+  <form action="core.html" method="POST">
+     <input id="email"/>
+     <input id="pass"/></b>
+     <input id="signup" type="button" value="Sign Up" onclick="signUp()">
+     <input id="signin" type="button" value="Sign In" onclick="signIn()">
+     <input id="signout" type="button" value="Sign Out" onclick="signOut()">
+  </form>
   <div id="testbox">
+  hey
+  </div>
   <p id="data">xc</p>
   <p id="otherData">none</p>
-hey
-  </div>
-<input id="mytextx" value="50"/>
-<input id="mytexty" value="50"/>
-<input id="data1"/>
+  <input id="mytextx" value="50"/>
+  <input id="mytexty" value="50"/>
+  <input id="data1"/>
+  <input id="play" type="button" value="Play!" onclick="play()">
 </body>
