@@ -1,0 +1,41 @@
+{
+  "extends": "eslint:recommended",
+  "env": {
+    "browser" : true,
+    "es6" : true,
+    "jquery" : true,
+  },
+  "globals": {
+    "__DEV__": false,
+    "__TEST__": false,
+    "__PROD__": false,
+    "__COVERAGE__": false
+  },
+  "rules": {
+    "arrow-parens": [1, "as-needed"],
+    "comma-dangle": [2, "always-multiline"],
+    "quotes": [2, "single"],
+    "key-spacing": 0,
+    "jsx-quotes": [2, "prefer-single"],
+    "max-len": [2, 300, 2],
+    "no-trailing-spaces": ["error", {"skipBlankLines": true}],
+    "no-restricted-syntax": ["error", {
+        "selector": "ForInStatement",
+        "message": "for..in loops iterate over the entire prototype chain, which is virtually never what you want. Use Object.{keys,values,entries}, and iterate over the resulting array.",
+      },
+      {
+        "selector": "ForOfStatement",
+        "message": "iterators/generators require regenerator-runtime, which is too heavyweight for this guide to allow them. Separately, loops should be avoided in favor of array iterations.",
+      },
+      {
+        "selector": "LabeledStatement",
+        "message": "Labels are a form of GOTO; using them makes code confusing and hard to maintain and understand.",
+      },
+      {
+        "selector": "WithStatement",
+        "message": "`with` is disallowed in strict mode because it makes code impossible to predict and optimize.",
+      },
+    ],
+    "object-curly-spacing": [2, "always"],
+  }
+}
