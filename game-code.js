@@ -1,6 +1,10 @@
 // game-code.js - implements the game's main logic
 
-$(function(){
+$(function() {
   var box = $('#movalbe');
   $('button').click(() => {box.html('<b>haha<b>')})
 });
+
+class Blob {
+
+}
