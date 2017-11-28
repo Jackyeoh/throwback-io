@@ -1,138 +1,45 @@
 <!DOCTYPE html>
 
 <head>
-  <meta charset="utf-8"/>
+  <meta charset='utf-8'/>
   <title>core</title>
 </head>
 
-<script src="https://www.gstatic.com/firebasejs/4.6.2/firebase.js"></script>
+<script src='https://www.gstatic.com/firebasejs/4.6.2/firebase.js'></script>
 <script>
   // Initialize Firebase
   var config = {
-    apiKey: "AIzaSyDIEaoy8b10jgq40JABqvYYayq_SlYS3AA",
-    authDomain: "throwback-io-9ea21.firebaseapp.com",
-    databaseURL: "https://throwback-io-9ea21.firebaseio.com",
-    projectId: "throwback-io-9ea21",
-    storageBucket: "throwback-io-9ea21.appspot.com",
-    messagingSenderId: "424917555065"
+    apiKey: 'AIzaSyDIEaoy8b10jgq40JABqvYYayq_SlYS3AA',
+    authDomain: 'throwback-io-9ea21.firebaseapp.com',
+    databaseURL: 'https://throwback-io-9ea21.firebaseio.com',
+    projectId: 'throwback-io-9ea21',
+    storageBucket: 'throwback-io-9ea21.appspot.com',
+    messagingSenderId: '424917555065'
   };
   firebase.initializeApp(config);
 </script>
 
-<script type="text/javascript">
-//==========Global Section Start==========
-  var sessionID = -1;
-  var user = -1;
-  var othData = [];
-  var gameLoop;
-  initApp();
-
-  function play(){
-    //kick off game's main mainloop
-    document.getElementById("play").style.visibility = "hidden";
-    gameLoop = setInterval(mainloop, 1000 / 60);
-    //setup canvas here
-    //end of canvas setup
-  }
-
-  function stop(){
-    //stops gameLoop
-    clearInterval(gameLoop);
-  }
-
-  var mainloop = function(){
-    var myData = new Object();
-    user = firebase.auth().currentUser;
-
-    //update own state here
-    if (user){
-      myData.uid = user.uid;
-      myData.x = document.getElementById("mytextx").value;
-      myData.y = document.getElementById("mytexty").value;
-      document.getElementById("data").innerHTML = user.uid + "</br>" + myData.x + "," + myData.y;
-
-      //publish self state to server
-      firebase.database().ref("game/" + sessionID + "/" + user.uid).set(myData);
-
-      //get other's data from server
-      firebase.database().ref('game/' + sessionID + "/").once('value').then(function(snapshot) {
-        snapshot.forEach(function(childSnapshot){
-          var item = childSnapshot.val();
-          if (item.uid != user.uid)
-            //update other object's state here
-            document.getElementById("otherData").innerHTML = JSON.stringify(item);
-        });
-
-      });
-    }
-}
-
-
-// Listening for auth state changes.
-function initApp() {
-  // [START authstatelistener]
-  firebase.auth().onAuthStateChanged(function(user) {
-    if (!user) {
-        // User is not signed in.
-        document.getElementById("data").innerHTML = "";
-        window.location.href = "login.html";
-      }else{
-        refUser = firebase.auth().currentUser;
-        document.getElementById("data").innerHTML = user.uid;
-      }
-    });
-  // [END authstatelistener]
-}
-
-function signIn(){
-  alert("signing in");
-  var email = document.getElementById("email").value;
-  var password = document.getElementById("pass").value;
-  firebase.auth().signInWithEmailAndPassword(email, password).catch(function(error) {
-    // Handle Errors here.
-    var errorCode = error.code;
-    var errorMessage = error.message;
-    alert(errorCode + " : " + errorMessage);
-  });
-}
-
-function signUp(){
-  var email = document.getElementById("email").value;
-  var password = document.getElementById("pass").value;
-  firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
-    // Handle Errors here.
-    var errorCode = error.code;
-    var errorMessage = error.message;
-    alert(errorCode + " : " + errorMessage);
-  });
-}
-
-function signOut(){
-  firebase.auth().signOut().then(function() {
-    alert("Signed Out");
-  }, function(error) {
-    alert("Sign Out Error");
-  });
-}
-
-
-</script>
+<script src='core.js'></script>
 
 <body>
-  <form action="core.html" method="POST">
-     <input id="email"/>
-     <input id="pass"/></b>
-     <input id="signup" type="button" value="Sign Up" onclick="signUp()">
-     <input id="signin" type="button" value="Sign In" onclick="signIn()">
-     <input id="signout" type="button" value="Sign Out" onclick="signOut()">
+  <body onunload="cleanUp()">
+  <form action='core.html' method='POST'>
+     <input id='email'/>
+     <input id='pass'/></b>
+     <input id='signup' type='button' value='Sign Up' onclick='signUp()'>
+     <input id='signin' type='button' value='Sign In' onclick='signIn()'>
+     <input id='signout' type='button' value='Sign Out' onclick='signOut()'>
   </form>
-  <div id="testbox">
+  <div id='testbox'>
   hey
   </div>
-  <p id="data">xc</p>
-  <p id="otherData">none</p>
-  <input id="mytextx" value="50"/>
-  <input id="mytexty" value="50"/>
-  <input id="data1"/>
-  <input id="play" type="button" value="Play!" onclick="play()">
+  <p id='data'>xc</p>
+  <ul id='otherData'>
+    <li>other player:</li>
+  </ul>
+  <p id='sessionData'>no session</p>
+  <input id='mytextx' value='50'/>
+  <input id='mytexty' value='50'/>
+  <input id='data1'/>
+  <input id='play' type='button' value='Play!' onclick='initialize()'>
 </body>
