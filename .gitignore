@@ -76,4 +76,14 @@ Thumbs.db
 
 ######################
 .idea/**/*
+
 .metadata/**/*
+
+# Firebase CLI Files #
+
+######################
+functions/node_modules/**/*
+
+*.json
+
+*.firebaserc

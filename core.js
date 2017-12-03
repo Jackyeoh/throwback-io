@@ -1,5 +1,5 @@
 //==========Global Section Start==========
-  var maxPlayerPerSession = 2;
+  var maxPlayerPerSession = 10;
   var sessionID = -1;
   var user = -1;
   var othData = [];
@@ -40,10 +40,10 @@
           alert("entering " + childSnapshot.key);
           sessionID = childSnapshot.key;
           //update player count
-          firebase.database().ref('game/' + sessionID + '/sessionData').transaction(function(sessionMetaData){
-            sessionMetaData.playerCount++;
-            return sessionMetaData;
-          });
+          //firebase.database().ref('game/' + sessionID + '/sessionData').transaction(function(sessionMetaData){
+          //  sessionMetaData.playerCount++;
+          //  return sessionMetaData;
+          //});
         }else{
           alert("skipping " + childSnapshot.key);
         }//otherwise skips
@@ -82,20 +82,7 @@ function createSession(){
       firebase.database().ref('game/' + sessionID + '/' + user.uid).set(generateClientState());
 
       //update game state by server
-      firebase.database().ref('game/' + sessionID + '/').once('value').then(function(snapshot){
-        document.getElementById('otherData').innerHTML = 'other players:';
-        snapshot.forEach(function(childSnapshot){
-          var item = childSnapshot.val();
-          //ignore this client's data and metadata
-          if (childSnapshot.key != user.uid){
-            //update other object's state here
-            var node = document.createElement('LI');
-            var textnode = document.createTextNode(JSON.stringify(item));
-            node.appendChild(textnode);
-            document.getElementById('otherData').appendChild(node);
-          }
-        });
-      });
+      readGameState();
     }
     //game logic
     document.getElementById('sessionData').innerHTML = 'session: ' + sessionID;
@@ -104,18 +91,26 @@ function createSession(){
 
 
 //================================================================================
-function readGameState(snapshot){
-  document.getElementById('otherData').innerHTML = 'other players:';
-  snapshot.forEach(function(childSnapshot){
-    var item = childSnapshot.val();
-    //ignore this client's data and metadata
-    if (childSnapshot.key != user.uid && childSnapshot.key == "sessionData"){
-      //update other object's state here
-      var node = document.createElement('LI');
-      var textnode = document.createTextNode(JSON.stringify(item));
-      node.appendChild(textnode);
-      document.getElementById('otherData').appendChild(node);
-    }
+function readGameState(){
+  firebase.database().ref('game/' + sessionID + '/').once('value').then(function(snapshot){
+    //process server data here
+    document.getElementById('otherData').innerHTML = 'other players:';
+
+    snapshot.forEach(function(childSnapshot){
+      var item = childSnapshot.val();
+
+      //ignore this client's data and metadata
+      if (childSnapshot.key != user.uid){
+        //update other object's state here
+        var node = document.createElement('LI');
+        var textnode = document.createTextNode(JSON.stringify(item));
+        node.appendChild(textnode);
+        document.getElementById('otherData').appendChild(node);
+      }else if (childSnapshot.key == 'sessionData'){
+
+      }
+    });
+
   });
 }
 
@@ -154,10 +149,10 @@ function cleanUp(){
   //remove self from session
   firebase.database().ref('game/' + sessionID + '/' + user.uid).remove();
   //decrease player count
-  firebase.database().ref('game/' + sessionID + '/sessionData').transaction(function(sessionMetaData){
-    sessionMetaData.playerCount--;
-    return sessionMetaData;
-  });
+  //firebase.database().ref('game/' + sessionID).transaction(function(sessionData){
+  //  sessionData.playerCount--;
+  //  return sessionMetaData;
+  //});
 }
 
 //================================================================================
@@ -196,7 +191,7 @@ function signOut(){
 
 //================================================================================
 function Session () {
-  this.playerCount = 1;
+  this.playerCount = 0;
   this.map = new Map();
 }
 
